@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="utf-8">
+
+        <title>Running Key</title>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="../js/functions.js"></script>
+
+        <link rel="stylesheet" href="../css/runningkey_style.css">
+
+    </head>
+    <body>
+      
+        <div class="ciphertext-div">
+            <h4>Ciphertext:</h4>
+            <textarea name="ciphertext" id="ciphertext" class="ciphertext-input" cols="30" rows="10"></textarea>
+
+            <h4>Crib:</h4>
+            <textarea name="crib" id="crib" class="crib-input" cols="20" rows="1"></textarea>
+        </div>
+
+        <h3>Ciphertext</h3>
+        <div class="ciphertext-display" id="ciphertext-display"></div>
+
+        <h3>Plaintext</h3>
+        <div class="plaintext-display" id="plaintext-display"></div>
+      
+        <h3>Key</h3>
+        <div class="key-display" id="key-display"></div>
+
+        <div>
+            <br><br>
+            <button id='shift-right'>Shift Right</button>
+            <button id='shift-left'>Shift Left</button>
+        </div>
+
+        <script>
+
+            $(document).ready( () => {
+                
+                // Given an array of ciphertext letters, this function writes each letter to a div on the page.
+                // The div will be displayed as a block.
+                // This is only done once.
+                function write_ciphertext(ciphertext) {
+
+                    for (let i = 0; i < ciphertext.length; i++) {
+
+                        var div = document.createElement("div");
+                        div.id = "ciphertext" + i.toString();
+
+                        div.style.width = "25px";
+                        div.style.height = "25px";
+
+                        div.style.textAlign = "center"
+                        div.style.backgroundColor = "#ddd"
+                        div.style.float = "left";
+                        div.style.border = "1px solid black";
+                        div.style.padding = "2px";
+                        div.style.paddingBottom = "0px";
+                        div.style.lineHeight = "25px";
+                        div.style.fontFamily = "'Courier New', Courier, monospace";
+
+                        div.innerHTML = ciphertext[i];
+                        document.getElementById("ciphertext-display").appendChild(div);
+                    }
+                }
+
+                // Initially writing the plaintext to the page. This is only done once.
+                // Note that instead of a div, an input element is created so that users may edit/add new letters.
+                function write_plaintext(plaintext) {
+                    for (let i = 0; i < plaintext.length; i++) {
+
+                        var element = document.createElement("input");
+                        element.id = i.toString();
+
+                        element.style.width = "25px";
+                        element.style.height = "25px";
+
+                        element.style.textAlign = "center"
+                        element.style.backgroundColor = "#ddd"
+                        element.style.float = "left";
+                        element.style.border = "1px solid black";
+                        element.style.padding = "2px";
+                        element.style.paddingBottom = "0px";
+                        element.style.lineHeight = "25px";
+                        element.style.fontFamily = "'Courier New', Courier, monospace";
+
+                        element.value = plaintext[i];
+
+                        document.getElementById("plaintext-display").appendChild(element);
+                    }
+                }
+
+                // Similar to the above functions, this takes writes the key to the page.
+                // The idea behind this software is that users will not need to edit the key,
+                // so divs are used instead of input elements.
+                function write_key(key) {
+                    for (let i = 0; i < plaintext.length; i++) {
+
+                        var div = document.createElement("div");
+                        div.id = "key" + i.toString();
+
+                        div.style.width = "25px";
+                        div.style.height = "25px";
+
+                        div.style.textAlign = "center"
+                        div.style.backgroundColor = "#ddd"
+                        div.style.float = "left";
+                        div.style.border = "1px solid black";
+                        div.style.padding = "2px";
+                        div.style.paddingBottom = "0px";
+                        div.style.lineHeight = "25px";
+                        div.style.fontFamily = "'Courier New', Courier, monospace";
+
+                        div.innerHTML = " ";
+
+                        document.getElementById("key-display").appendChild(div);
+                    }
+                }
+
+                // Given the plaintext array, this function will update it's contents to the page.
+                function update_plaintext(plaintext) {
+                    for (let i = 0; i < plaintext.length; i++) {
+                        var element = document.getElementById(`${i}`).value = plaintext[i];
+                    }
+                }
+
+                // Given the key array, this function will update it's contents to the page.
+                function update_key(key) {
+
+                    // Getting the latest version of the key
+                    key = fill_key(plaintext, ciphertext, key);
+
+                    // Showing the new key on the page
+                    for (let i = 0; i < key.length; i++) {
+                        var div = document.getElementById(`key${i}`).innerHTML = key[i];
+                    }
+                }
+
+                // Todo: Error handling for incorrect input. No symbols and such.
+                // Only 1 letter should be allowed. This logic will have to be implemented in the front-end close to the input layer.
+
+
+                // Obtaining the ciphertext and crib from the text boxes
+                var ciphertext = $('#ciphertext').val();
+                var crib = $('#crib').val();
+
+                // Removing any spaces
+                ciphertext = ciphertext.replace(/\s/g, '');
+                crib = crib.replace(/\s/g, '');
+
+                // Creating the arrays
+                var ciphertext = ciphertext.split('');
+                var crib = crib.split('');
+                var plaintext = create_plaintext(ciphertext, crib);
+                var key = create_key(ciphertext);
+
+                // Initially writing the arrays to the page
+                write_ciphertext(ciphertext);
+                write_plaintext(plaintext);
+                write_key(key);     // Note that write_key just creates the initial array. It is unfilled
+
+                // Filling in the key based on the plaintext letters
+                update_key(key); 
+
+
+                // Shifting the plaintext right
+                $('#shift-right').click( () => {
+                    plaintext = shift_array_right(plaintext);
+                    update_plaintext(plaintext);
+                    update_key(key);
+        
+                });
+
+                //Shifting the plaintext left
+                $('#shift-left').click( () => {
+                    plaintext = shift_array_left(plaintext);
+                    update_plaintext(plaintext);
+                    update_key(key);
+                });
+
+
+                // Allowing users to manually enter in letters to the plaintext.
+                // Todo: Extensive testing to ensure that invalid keys are handled. Otherwise, some key elements may be undefined.
+                for (let i = 0; i < plaintext.length; i++) {
+                    document.getElementById(`${i}`).addEventListener("keydown", (e) => {
+                        
+                        // Getting the key that was pressed. We will assume that this is a letter.
+                        var letter = e.key;
+
+                        // Checking for invalid keys
+                        // Todo: Add in functionality to move right if the right arrow is pushed, and vice versa for the left arrow. Maybe convert it to a tab.
+                        if (letter == "ArrowRight" || letter == "ArrowLeft" || letter == "ArrowUp" || letter == "ArrowDown") {
+                            console.log("Invalid Letter: " + letter);
+                            return;
+                        }
+
+                        // If the user is attempting to erase a letter, we must also erase the key letter corresponding to it.
+                        if (letter == "Backspace") {
+                            plaintext[i] = "";
+                            key[i] = "";
+                            update_key(key);
+                        }
+
+                        // If the user just enters in a normal, valid letter.
+                        else {
+                            plaintext[i] = letter;
+                            update_key(key);
+                        }
+
+                    });
+                }
+            });
+    
+        </script>
+
+    </body>
+
+</html>
