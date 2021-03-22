@@ -20,6 +20,9 @@
 
             <h4>Crib:</h4>
             <textarea name="crib" id="crib" class="crib-input" cols="20" rows="1"></textarea>
+            <br><br>
+            <button id='cryptanalyze'>Begin Cryptanalysis</button>
+            <p>Note: This will reset any progress.</p>
         </div>
 
         <h3>Ciphertext</h3>
@@ -35,6 +38,7 @@
             <br><br>
             <button id='shift-right'>Shift Right</button>
             <button id='shift-left'>Shift Left</button>
+            <button id='clear-plaintext'>Clear Plaintext</button>
         </div>
 
         <script>
@@ -167,6 +171,17 @@
                 update_key(key); 
 
 
+                // Allowing the user to initially write the ciphertext and plaintext to the page
+                $('#cryptanalyze').click( () => {
+
+                    // To do this, we really only need to reload the page.
+                    window.location.reload();
+
+                    // Disable the cryptanalze button, as the information only needs to be written once.
+                    document.getElementById('cryptanalyze').disabled = 'disabled';
+        
+                });
+
                 // Shifting the plaintext right
                 $('#shift-right').click( () => {
                     plaintext = shift_array_right(plaintext);
@@ -175,9 +190,18 @@
         
                 });
 
-                //Shifting the plaintext left
+                // Shifting the plaintext left
                 $('#shift-left').click( () => {
                     plaintext = shift_array_left(plaintext);
+                    update_plaintext(plaintext);
+                    update_key(key);
+                });
+
+                // Clearing the plaintext and the key
+                $('#clear-plaintext').click( () => {
+                    for (let i = 0; i < plaintext.length; i++) {
+                        plaintext[i] = "";
+                    }
                     update_plaintext(plaintext);
                     update_key(key);
                 });
