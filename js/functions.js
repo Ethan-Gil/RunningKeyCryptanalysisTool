@@ -84,6 +84,7 @@ function fill_key(plaintext, ciphertext, key) {
     }
     
     // Returning the key array
+    console.log(key);
     return key;
 }
 

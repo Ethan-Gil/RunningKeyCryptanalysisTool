@@ -7,20 +7,23 @@
     margin-right: auto;
 }
 
-/* .container {
+.container {
 	width: 90%;
 	overflow-x: auto;
 	white-space: nowrap;
     padding: 50px;
 }
 
-table, th, td {
+table, th, td, input {
     border: 1px solid black;
+    border-collapse: collapse;
 }
 
-th, td {
-    padding: .5em 1em;
-} */
+th, td, input {
+    width: 35px;
+    height: 35px;
+    text-align: center;
+}
 
 .plaintext-display {
     height: 60px;
