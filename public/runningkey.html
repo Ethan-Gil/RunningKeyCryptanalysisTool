@@ -25,8 +25,6 @@
             <p>Note: This will reset any progress.</p>
         </div>
 
-
-
         <div class="container" id="container">
         </div>
 
@@ -58,13 +56,11 @@
 
                 // Initially writing the arrays to the page
                 write(ciphertext, plaintext, key);
-                console.log("Wrote To Page")
 
-
-                // TODO UPDATE PLAINTEXT AND KEY TOGETHER IN SINGLE FUNCTION
                 // Given the plaintext array, this function will update it's contents to the page.
                 function update_plaintext(plaintext) {
-                    console.log("Updating Plaintext...")
+                    plaintext = fill_plaintext(plaintext, ciphertext, key);
+
                     for (let i = 0; i < plaintext.length; i++) {
                         document.getElementById(`${i}`).value = plaintext[i];
                     }
@@ -79,7 +75,7 @@
                     // Displaying the new key values to the page
                     // Note, unlike the plaintext, we do not access the table's cell by .value, but instead we use .innerHTML since this is not an input cell
                     for (let i = 0; i < key.length; i++) {
-                        document.getElementById(`key${i}`).innerHTML = key[i];
+                        document.getElementById(`key${i}`).value = key[i];
                     }
                 }
 
@@ -119,6 +115,8 @@
 
                 // Listening for user input
                 for (let i = 0; i < plaintext.length; i++) {
+
+                    // Plaintext Changes
                     document.getElementById(`${i}`).addEventListener("keydown", (e) => {
                         
                         // Getting the key that was pressed. We will assume that this is a letter.
@@ -144,6 +142,33 @@
                             update_key(key);
                         }
                     });
+
+                    document.getElementById(`key${i}`).addEventListener("keydown", (e) => {
+                        
+                        // Getting the key that was pressed. We will assume that this is a letter.
+                        var letter = e.key;
+
+                        // Checking for invalid keys
+                        // Todo: Add in functionality to move right if the right arrow is pushed, and vice versa for the left arrow. Maybe convert it to a tab.
+                        if (letter == "ArrowRight" || letter == "ArrowLeft" || letter == "ArrowUp" || letter == "ArrowDown" || letter == "Tab") {
+                            console.log("Invalid Letter: " + letter);
+                            return;
+                        }
+
+                        // If the user is attempting to erase a letter, we must also erase the key letter corresponding to it.
+                        if (letter == "Backspace") {
+                            plaintext[i] = "";
+                            key[i] = "";
+                            update_plaintext(plaintext);
+                        }
+
+                        // If the user just enters in a normal, valid letter.
+                        else {
+                            key[i] = letter;
+                            update_plaintext(plaintext);
+                        }
+                    });
+                    
                 }
 
             });
@@ -183,18 +208,33 @@
                     tr.appendChild(td);
                 }
 
-                // Key
                 key = fill_key(plaintext, ciphertext, key);
                 var tr = document.createElement('TR');
                 tr.id = "key_row";
                 tableBody.appendChild(tr);
                 for (i = 0; i < ciphertext.length; i++) {
                     var td = document.createElement('TD')
-                    // td.id = `key${i}`;
-                    td.id = "key" + i;
-                    td.appendChild(document.createTextNode(key[i]));
+                    var element = document.createElement('INPUT');
+                    element.value = key[i];
+                    element.id = `key${i}`;
+                    
+                    td.appendChild(element);
                     tr.appendChild(td);
                 }
+
+                // Key
+                // key = fill_key(plaintext, ciphertext, key);
+                // var tr = document.createElement('TR');
+                // tr.id = "key_row";
+                // tableBody.appendChild(tr);
+                // for (i = 0; i < ciphertext.length; i++) {
+                //     var td = document.createElement('TD')
+                //     td.id = `key${i}`;
+                //     td.appendChild(document.createTextNode(key[i]));
+                //     tr.appendChild(td);
+                // }
+
+                // Appending the new data to the table
                 myTableDiv.appendChild(table)
             }
     

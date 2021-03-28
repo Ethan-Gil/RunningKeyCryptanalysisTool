@@ -64,8 +64,8 @@ function shift_array_left(array) {
 // Updates the key based on the current plaintext and ciphertext values
 function fill_key(plaintext, ciphertext, key) {
     
-    // Changing the plaintext to all lowercase to be passed into the get_key_letter method.
-    plaintext_replacement = to_uppercase(plaintext);
+    // Changing the plaintext to all uppercase to be passed into the get_letter method.
+    var plaintext_replacement = to_uppercase(plaintext);
 
     for (let i = 0; i < ciphertext.length; i++) {
         current_ciphertext_letter = ciphertext[i];
@@ -73,7 +73,7 @@ function fill_key(plaintext, ciphertext, key) {
 
         // If there is a plaintext letter at the current index, we will find the corresponding key letter.
         if (current_plaintext_letter != undefined) {
-            letter = get_key_letter(current_plaintext_letter, current_ciphertext_letter, table);
+            letter = get_letter(current_plaintext_letter, current_ciphertext_letter, table);
             key[i] = letter;
         }
 
@@ -84,8 +84,33 @@ function fill_key(plaintext, ciphertext, key) {
     }
     
     // Returning the key array
-    console.log(key);
     return key;
+}
+
+// Updates the plaintext based on the current key and ciphertext
+function fill_plaintext(plaintext, ciphertext, key) {
+
+    // Changing the key to all uppercase to be passed into the get_letter method.
+    var key_replacement = to_uppercase(key);
+
+    for (let i = 0; i < ciphertext.length; i++) {
+        current_ciphertext_letter = ciphertext[i];
+        current_key_letter = key_replacement[i];
+
+        // If there is a key letter at the current index, we will find the corresponding plaintext letter.
+        if (current_key_letter != undefined) {
+            letter = get_letter(current_key_letter, current_ciphertext_letter, table);
+            plaintext[i] = letter;
+        }
+
+        // Otherwise, if there is no letter in the key, there is no letter in the plaintext.
+        else {
+            plaintext[i] = "";
+        }
+    }
+    
+    // Returning the new plaintext array
+    return plaintext;
 }
 
 
@@ -143,7 +168,7 @@ function letter_to_num(letter) {
 
 
 // Given the plaintext and ciphertext letters, along with the addition table, returns the corresponding key letter to the plaintext letter.
-function get_key_letter(plaintext_letter, ciphertext_letter, table) {
+function get_letter(plaintext_letter, ciphertext_letter, table) {
 
     for (let row = 0; row < table.length; row++) {
 
@@ -176,7 +201,7 @@ function to_uppercase(arr) {
     
     for (let i = 0; i < arr.length; i++) {
         if (arr[i] != "") {
-            new_arr[i] = arr[i].toUpperCase();
+            new_arr[i] = arr[i].toString().toUpperCase();
         }
     }
 
@@ -189,7 +214,7 @@ function to_lowercase(arr) {
     
     for (let i = 0; i < arr.length; i++) {
         if (arr[i] != "") {
-            new_arr[i] = arr[i].toLowerCase();
+            new_arr[i] = arr[i].toString().toLowerCase();
         }
     }
 
