@@ -201,6 +201,7 @@
                 for (i = 0; i < ciphertext.length; i++) {
                     var td = document.createElement('TD')
                     var element = document.createElement('INPUT');
+                    element.maxLength = 1;
                     element.value = plaintext[i];
                     element.id = `${i}`
 
@@ -215,6 +216,7 @@
                 for (i = 0; i < ciphertext.length; i++) {
                     var td = document.createElement('TD')
                     var element = document.createElement('INPUT');
+                    element.maxLength = 1;
                     element.value = key[i];
                     element.id = `key${i}`;
                     
