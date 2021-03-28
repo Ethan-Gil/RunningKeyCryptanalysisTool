@@ -9,16 +9,18 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="../js/functions.js"></script>
 
-        <link rel="stylesheet" href="../css/test.css">
+        <link rel="stylesheet" href="../css/running_key.css">
 
     </head>
     <body>
       
-        <div class="ciphertext-div">
-            <h4>Ciphertext:</h4>
+        <div class="input-div">
+            <h1>Running Key Cryptanalysis</h1>
+            <br>
+            <h2>Ciphertext:</h2>
             <textarea name="ciphertext" id="ciphertext" class="ciphertext-input" cols="30" rows="10"></textarea>
 
-            <h4>Crib:</h4>
+            <h2>Crib:</h2>
             <textarea name="crib" id="crib" class="crib-input" cols="20" rows="1"></textarea>
             <br><br>
             <button id='cryptanalyze'>Begin Cryptanalysis</button>
@@ -29,7 +31,7 @@
         </div>
 
         <div>
-            <br><br>
+            <br>
             <button id='shift-left'>Shift Left</button>
             <button id='shift-right'>Shift Right</button>
             <button id='clear-plaintext'>Clear Plaintext</button>
@@ -60,6 +62,7 @@
                 // Given the plaintext array, this function will update it's contents to the page.
                 function update_plaintext(plaintext) {
                     plaintext = fill_plaintext(plaintext, ciphertext, key);
+                    console.log("New plaintext: " + plaintext)
 
                     for (let i = 0; i < plaintext.length; i++) {
                         document.getElementById(`${i}`).value = plaintext[i];
@@ -71,6 +74,8 @@
 
                     // Getting the latest version of the key from the backend
                     key = fill_key(plaintext, ciphertext, key);
+                    console.log("New key: " + key)
+
 
                     // Displaying the new key values to the page
                     // Note, unlike the plaintext, we do not access the table's cell by .value, but instead we use .innerHTML since this is not an input cell
@@ -93,6 +98,8 @@
                 // Shifting the plaintext right
                 $('#shift-right').click( () => {
                     plaintext = shift_array_right(plaintext);
+                    key = shift_array_right(key)
+
                     update_plaintext(plaintext);
                     update_key(key);
                 });
@@ -100,6 +107,8 @@
                 // Shifting the plaintext left
                 $('#shift-left').click( () => {
                     plaintext = shift_array_left(plaintext);
+                    key = shift_array_left(key);
+
                     update_plaintext(plaintext);
                     update_key(key);
                 });
@@ -108,6 +117,7 @@
                 $('#clear-plaintext').click( () => {
                     for (let i = 0; i < plaintext.length; i++) {
                         plaintext[i] = "";
+                        key[i] = "";
                     }
                     update_plaintext(plaintext);
                     update_key(key);

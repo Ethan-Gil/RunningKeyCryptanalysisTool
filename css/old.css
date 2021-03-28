@@ -7,24 +7,6 @@
     margin-right: auto;
 }
 
-.container {
-	width: 90%;
-	overflow-x: auto;
-	white-space: nowrap;
-    padding: 50px;
-}
-
-table, th, td, input {
-    border: 1px solid black;
-    border-collapse: collapse;
-}
-
-th, td, input {
-    width: 35px;
-    height: 35px;
-    text-align: center;
-}
-
 .plaintext-display {
     height: 60px;
     width: 90%;
@@ -42,15 +24,6 @@ th, td, input {
     margin-left: auto;
     margin-right: auto;
 }
-
- /* .ciphertext-display .item {
-    width: 25px;
-    height: 25px;
-    line-height: 25px;
-    text-align: center;
-    background-color: #ddd;
-    border: 1px solid black;
-} */
 
 /* Parent of the text area (input area) */
 .ciphertext-div {
