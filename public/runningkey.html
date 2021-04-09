@@ -24,7 +24,7 @@
             <textarea name="crib" id="crib" class="crib-input" cols="20" rows="1"></textarea>
             <br><br>
             <button id='cryptanalyze'>Begin Cryptanalysis</button>
-            <p>Note: This will reset any progress.</p>
+            <p>Note: This will reset any progress you have made.</p>
         </div>
 
         <div class="container" id="container">
@@ -56,13 +56,17 @@
                 var plaintext = create_plaintext(ciphertext, crib);
                 var key = create_key(ciphertext);
 
+                // Keeping track of the crib
+                var crib_index = 0;
+                var crib_length = crib.length;
+
                 // Initially writing the arrays to the page
                 write(ciphertext, plaintext, key);
 
                 // Given the plaintext array, this function will update it's contents to the page.
                 function update_plaintext(plaintext) {
                     plaintext = fill_plaintext(plaintext, ciphertext, key);
-                    console.log("New plaintext: " + plaintext)
+                    //console.log("New plaintext: " + plaintext)
 
                     for (let i = 0; i < plaintext.length; i++) {
                         document.getElementById(`${i}`).value = plaintext[i];
@@ -74,7 +78,7 @@
 
                     // Getting the latest version of the key from the backend
                     key = fill_key(plaintext, ciphertext, key);
-                    console.log("New key: " + key)
+                    //console.log("New key: " + key)
 
 
                     // Displaying the new key values to the page
@@ -97,20 +101,41 @@
 
                 // Shifting the plaintext right
                 $('#shift-right').click( () => {
+
+                    // Saving a copy of the original plaintext
+                    var original_plaintext = plaintext;
+                    
                     plaintext = shift_array_right(plaintext);
                     key = shift_array_right(key)
 
-                    update_plaintext(plaintext);
+                    // If the array was shifted right, update the crib index
+                    if (compare_array(plaintext, original_plaintext) == false) {
+                        crib_index++;
+                    }
+                    console.log(`Crib Index: ${crib_index}`)
+                    
+                    // The order in which these are called ensures that the plaintext will never be changed based on shifting.
                     update_key(key);
+                    update_plaintext(plaintext);
                 });
 
                 // Shifting the plaintext left
                 $('#shift-left').click( () => {
+
+                    // Saving a copy of the original plaintext
+                    var original_plaintext = plaintext;
+
                     plaintext = shift_array_left(plaintext);
                     key = shift_array_left(key);
 
-                    update_plaintext(plaintext);
+                    // If the array was shifted left, update the crib index
+                    if (compare_array(plaintext, original_plaintext) == false) {
+                        crib_index--;
+                    }
+                    console.log(`Crib Index: ${crib_index}`)
+
                     update_key(key);
+                    update_plaintext(plaintext);
                 });
 
                 // Clearing the plaintext and the key
@@ -153,6 +178,7 @@
                         }
                     });
 
+                    // Key Changes
                     document.getElementById(`key${i}`).addEventListener("keydown", (e) => {
                         
                         // Getting the key that was pressed. We will assume that this is a letter.
@@ -174,13 +200,20 @@
 
                         // If the user just enters in a normal, valid letter.
                         else {
+                            // Getting the indexes of every letter in the crib, within the plaintext array.
+                            var crib_placements = find_crib_placement(plaintext, crib, crib_index);
+                            // console.log(`Crib Indexes: ${crib_placements}`);
+
+                            // If the crib is changed through a key letter edit, then warn the user:
+                            if (crib_placements.includes(i)) {
+                                alert("Warning: The previous edit you made changed the crib. Please ensure that this is what you wanted to do.");
+                            }
+
                             key[i] = letter;
                             update_plaintext(plaintext);
                         }
                     });
-                    
                 }
-
             });
 
 
@@ -219,6 +252,7 @@
                     tr.appendChild(td);
                 }
 
+                // Key (input)
                 key = fill_key(plaintext, ciphertext, key);
                 var tr = document.createElement('TR');
                 tr.id = "key_row";
@@ -234,7 +268,7 @@
                     tr.appendChild(td);
                 }
 
-                // Key
+                // Key (no input)
                 // key = fill_key(plaintext, ciphertext, key);
                 // var tr = document.createElement('TR');
                 // tr.id = "key_row";

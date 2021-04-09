@@ -33,31 +33,73 @@ function create_key(ciphertext) {
 function shift_array_right(array) {
 
     var length = array.length;
+    var new_arr = [];
+
+    // Creating a new array
+    for (let i = 0; i < array.length; i++) {
+        new_arr[i] = array[i];
+    }
 
     // If the last element of the array contains a letter, then do not shift right
     if (array[length - 1] != '') {
         console.log("Cannot shift further right");
-        return array;
+        return new_arr;
     }
 
     // Shifting the array right
-    array.unshift(array.pop());
-    return array;
+    new_arr.unshift(new_arr.pop());
+    return new_arr;
 }
 
 // Shifting the array left. 
 // Non-letter elements will wrap around, but will not wrap any letters around
 function shift_array_left(array) {
 
+    var new_arr = [];
+
+    // Creating a new array
+    for (let i = 0; i < array.length; i++) {
+        new_arr[i] = array[i];
+    }
+
     // If the first element of the array contains a letter, then do not shift left
     if (array[0] != '') {
         console.log("Cannot shift further left");
-        return array;
+        return new_arr;
     }
 
     // Shifting the array right
-    array.push(array.shift());
-    return array;
+    new_arr.push(new_arr.shift());
+    return new_arr;
+}
+
+// Compares two arrays
+// Returns true if they contain the same elements
+function compare_array(arr1, arr2) {
+    if (arr1.length != arr2.length) return false;
+
+    for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i] != arr2[i]) return false;
+    }
+
+    return true;
+}
+
+// Given the plaintext, crib, and index of the first letter of the crib,
+// this will return an array of every crib index.
+// This allows each letter of the crib to be checked.
+function find_crib_placement(plaintext, crib, crib_index) {
+    var crib_indexes = []
+    var j = 0;
+
+    for (let i = crib_index; i < plaintext.length; i++) {
+        if (j < crib.length) {
+            crib_indexes.push(i);
+            j++;
+        }
+    }
+
+    return crib_indexes;
 }
 
 
