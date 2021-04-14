@@ -38,7 +38,7 @@ input, textarea {
     margin-right: auto;
 	white-space: nowrap;
     padding: 50px;
-    border: 1px solid red;
+    /* border: 1px solid red; */
 }
 
 table, th, td, input {
