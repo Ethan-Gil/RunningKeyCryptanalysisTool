@@ -25,6 +25,7 @@
             <textarea name="crib" id="crib" class="crib-input" cols="20" rows="1"></textarea>
             <br><br>
             <button id='cryptanalyze'>Begin Cryptanalysis</button>
+            <button id='reset'>Reset</button>
             <p>Note: This will reset any progress you have made.</p>
         </div>
 
@@ -35,7 +36,6 @@
             <br>
             <button id='shift-left'>Shift Left</button>
             <button id='shift-right'>Shift Right</button>
-            <button id='clear-plaintext'>Clear Plaintext</button>
         </div>
 
         <script>
@@ -83,17 +83,28 @@
             btn.addEventListener("click", cryptanalyze);
             // DISABLE AFTER USE
 
+            var resetBtn = document.getElementById("reset");
+            resetBtn.addEventListener("click", reset);
+
+            function reset() {
+                btn.disabled = false;
+                location.reload();
+            }
+
             // Main method that writes the information to the page and awaits for further user input.
             function cryptanalyze() {
+
+                // Disabling the cryptanalyze button, as it only needs to be used once.
                 btn.disabled = true;
 
+                // Getting the initial ciphertext, plaintext, and key based on user input.
                 ciphertext = getCiphertextInput();
                 plaintext = getPlaintextInput(ciphertext);
                 key = getKeyInput(ciphertext);
 
-                console.log("Ciphertext: " + ciphertext);
-                console.log("Plaintext: " + plaintext)
-                console.log("Key: " + key);
+                // console.log("Ciphertext: " + ciphertext);
+                // console.log("Plaintext: " + plaintext)
+                // console.log("Key: " + key);
 
                 // Keeping track of the crib
                 var crib_index = 0;
@@ -208,7 +219,7 @@
                 if (compare_array(plaintext, original_plaintext) == false) {
                     crib_index++;
                 }
-                console.log(`Crib Index: ${crib_index}`);
+                // console.log(`Crib Index: ${crib_index}`);
 
                 // The order in which these are called ensures that the plaintext will never be changed based on shifting.
                 update_key(key);
@@ -228,21 +239,26 @@
                 if (compare_array(plaintext, original_plaintext) == false) {
                     crib_index--;
                 }
-                console.log(`Crib Index: ${crib_index}`)
+                // console.log(`Crib Index: ${crib_index}`)
 
                 update_key(key);
                 update_plaintext(plaintext);
             });
 
-                // Clearing the plaintext and the key
-                $('#clear-plaintext').click( () => {
-                for (let i = 0; i < plaintext.length; i++) {
-                    plaintext[i] = "";
-                    key[i] = "";
-                }
-                update_plaintext(plaintext);
-                update_key(key);
-            }); 
+            //     // Clearing the plaintext and the key
+            //     $('#clear-plaintext').click( () => {
+            //     for (let i = 0; i < plaintext.length; i++) {
+            //         plaintext[i] = "";
+            //         key[i] = "";
+            //     }
+            //     update_plaintext(plaintext);
+            //     update_key(key);
+            // }); 
+
+            // todo: functonality to reset input and reset ciphertext, plaintxt, and key.
+            function clearInput() {
+                console.log("to do")
+            }
 
             // Function that generates the initial table that will be shown on the web page.
             // This is only called once
