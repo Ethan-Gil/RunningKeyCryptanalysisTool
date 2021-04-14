@@ -39,23 +39,58 @@
         </div>
 
         <script>
+            var ciphertext;
+            var plaintext;
+            var key;
+            var crib_length;
+            var crib_index = 0;
 
-            $(document).ready( () => {
-
-                // Obtaining the ciphertext and crib from the text boxes
+            // Getting the ciphertext from user input
+            function getCiphertextInput() {
                 var ciphertext = $('#ciphertext').val();
+                ciphertext = ciphertext.replace(/\s/g, ''); // Removing any spaces
+                ciphertext = ciphertext.split('');          // Converting it from string to array
+                ciphertext = to_uppercase(ciphertext);      // It should always be uppercase
+
+                return ciphertext;
+            }
+
+            // Getting the crib from the user and creating the plaintext array
+            // Also setting the length of the crib
+            function getPlaintextInput(ciphertext) {
                 var crib = $('#crib').val();
-
-                // Removing any spaces
-                ciphertext = ciphertext.replace(/\s/g, '');
                 crib = crib.replace(/\s/g, '');
+                crib = crib.split('');
 
-                // Creating the arrays
-                var ciphertext = ciphertext.split('');
-                ciphertext = to_uppercase(ciphertext);
-                var crib = crib.split('');
+                // Creating the plaintext array using the ciphertext and crib
                 var plaintext = create_plaintext(ciphertext, crib);
+
+                // Setting the length of the crib
+                crib_length = crib.length;
+
+                return plaintext;
+            }
+
+            // Creating the initial key array
+            function getKeyInput(ciphertext) {
                 var key = create_key(ciphertext);
+
+                return key;
+            }
+
+            // Adding an event listener for the cryptanalyze button
+            var btn = document.getElementById("cryptanalyze")
+            btn.addEventListener("click", cryptanalyze);
+
+            // Main method that writes the information to the page and awaits for further user input.
+            function cryptanalyze() {
+                ciphertext = getCiphertextInput();
+                plaintext = getPlaintextInput(ciphertext);
+                key = getKeyInput(ciphertext);
+
+                console.log("Ciphertext: " + ciphertext);
+                console.log("Plaintext: " + plaintext)
+                console.log("Key: " + key);
 
                 // Keeping track of the crib
                 var crib_index = 0;
@@ -64,95 +99,10 @@
                 // Initially writing the arrays to the page
                 write(ciphertext, plaintext, key);
 
-                // Given the plaintext array, this function will update it's contents to the page.
-                function update_plaintext(plaintext) {
-                    plaintext = fill_plaintext(plaintext, ciphertext, key);
-                    //console.log("New plaintext: " + plaintext)
-
-                    for (let i = 0; i < plaintext.length; i++) {
-                        document.getElementById(`${i}`).value = plaintext[i];
-                    }
-                }
-
-                // Given the key array, this function will update it's contents to the page.
-                function update_key(key) {
-
-                    // Getting the latest version of the key from the backend
-                    key = fill_key(plaintext, ciphertext, key);
-                    //console.log("New key: " + key)
-
-
-                    // Displaying the new key values to the page
-                    // Note, unlike the plaintext, we do not access the table's cell by .value, but instead we use .innerHTML since this is not an input cell
-                    for (let i = 0; i < key.length; i++) {
-                        document.getElementById(`key${i}`).value = key[i];
-                    }
-                }
-
-                // Allowing the user to initially write the ciphertext and plaintext to the page
-                $('#cryptanalyze').click( () => {
-
-                    // To do this, we really only need to reload the page.
-                    window.location.reload();
-
-                    // Disable the cryptanalze button, as the information only needs to be written once.
-                    document.getElementById('cryptanalyze').disabled = 'disabled';
-
-                });
-
-                // Shifting the plaintext right
-                $('#shift-right').click( () => {
-
-                    // Saving a copy of the original plaintext
-                    var original_plaintext = plaintext;
-                    
-                    plaintext = shift_array_right(plaintext);
-                    key = shift_array_right(key)
-
-                    // If the array was shifted right, update the crib index
-                    if (compare_array(plaintext, original_plaintext) == false) {
-                        crib_index++;
-                    }
-                    console.log(`Crib Index: ${crib_index}`)
-                    
-                    // The order in which these are called ensures that the plaintext will never be changed based on shifting.
-                    update_key(key);
-                    update_plaintext(plaintext);
-                });
-
-                // Shifting the plaintext left
-                $('#shift-left').click( () => {
-
-                    // Saving a copy of the original plaintext
-                    var original_plaintext = plaintext;
-
-                    plaintext = shift_array_left(plaintext);
-                    key = shift_array_left(key);
-
-                    // If the array was shifted left, update the crib index
-                    if (compare_array(plaintext, original_plaintext) == false) {
-                        crib_index--;
-                    }
-                    console.log(`Crib Index: ${crib_index}`)
-
-                    update_key(key);
-                    update_plaintext(plaintext);
-                });
-
-                // Clearing the plaintext and the key
-                $('#clear-plaintext').click( () => {
-                    for (let i = 0; i < plaintext.length; i++) {
-                        plaintext[i] = "";
-                        key[i] = "";
-                    }
-                    update_plaintext(plaintext);
-                    update_key(key);
-                });
-
-                // Listening for user input
+                // Listening for further user input
                 for (let i = 0; i < plaintext.length; i++) {
 
-                    // Plaintext Changes
+                    // Listening for plaintext changes
                     document.getElementById(`${i}`).addEventListener("keydown", (e) => {
                         
                         // Getting the key that was pressed. We will assume that this is a letter.
@@ -179,28 +129,27 @@
                         }
                     });
 
-                    // Key Changes
+                    // Listening for key changes
                     document.getElementById(`key${i}`).addEventListener("keydown", (e) => {
                         
-                        // Getting the key that was pressed. We will assume that this is a letter.
                         var letter = e.key;
 
-                        // Checking for invalid keys
-                        // Todo: Add in functionality to move right if the right arrow is pushed, and vice versa for the left arrow. Maybe convert it to a tab.
                         if (letter == "ArrowRight" || letter == "ArrowLeft" || letter == "ArrowUp" || letter == "ArrowDown" || letter == "Tab") {
                             console.log("Invalid Letter: " + letter);
                             return;
                         }
 
-                        // If the user is attempting to erase a letter, we must also erase the key letter corresponding to it.
                         if (letter == "Backspace") {
                             plaintext[i] = "";
                             key[i] = "";
                             update_plaintext(plaintext);
                         }
 
-                        // If the user just enters in a normal, valid letter.
                         else {
+                        
+                            // It isn't a good idea for users to be able to change the crib, as it can corrupt the work they have completed.
+                            // Therefore, we will keep track of the crib's placement, and if any letter within the crib is changed through the key, the user will be alerted.
+
                             // Getting the indexes of every letter in the crib, within the plaintext array.
                             var crib_placements = find_crib_placement(plaintext, crib, crib_index);
                             // console.log(`Crib Indexes: ${crib_placements}`);
@@ -215,8 +164,82 @@
                         }
                     });
                 }
+            }
+
+            // Given the plaintext array, this function will update it's contents to the page.
+            function update_plaintext(plaintext) {
+                plaintext = fill_plaintext(plaintext, ciphertext, key);
+                //console.log("New plaintext: " + plaintext)
+
+                for (let i = 0; i < plaintext.length; i++) {
+                    document.getElementById(`${i}`).value = plaintext[i];
+                }
+            }
+
+            // Given the key array, this function will update it's contents to the page.
+            function update_key(key) {
+
+                // Getting the latest version of the key from the backend
+                key = fill_key(plaintext, ciphertext, key);
+                //console.log("New key: " + key)
+
+
+                // Displaying the new key values to the page
+                for (let i = 0; i < key.length; i++) {
+                    document.getElementById(`key${i}`).value = key[i];
+                }
+            }
+
+            // Shifting the plaintext right
+            $('#shift-right').click( () => {
+
+                console.log("Plaintext: " + plaintext)
+
+                // Saving a copy of the original plaintext
+                var original_plaintext = plaintext;
+
+                plaintext = shift_array_right(plaintext);
+                key = shift_array_right(key)
+
+                // If the array was shifted right, update the crib index
+                if (compare_array(plaintext, original_plaintext) == false) {
+                    crib_index++;
+                }
+                console.log(`Crib Index: ${crib_index}`);
+
+                // The order in which these are called ensures that the plaintext will never be changed based on shifting.
+                update_key(key);
+                update_plaintext(plaintext);
             });
 
+            // Shifting the plaintext left
+            $('#shift-left').click( () => {
+
+                // Saving a copy of the original plaintext
+                var original_plaintext = plaintext;
+
+                plaintext = shift_array_left(plaintext);
+                key = shift_array_left(key);
+
+                // If the array was shifted left, update the crib index
+                if (compare_array(plaintext, original_plaintext) == false) {
+                    crib_index--;
+                }
+                console.log(`Crib Index: ${crib_index}`)
+
+                update_key(key);
+                update_plaintext(plaintext);
+            });
+
+                // Clearing the plaintext and the key
+                $('#clear-plaintext').click( () => {
+                for (let i = 0; i < plaintext.length; i++) {
+                    plaintext[i] = "";
+                    key[i] = "";
+                }
+                update_plaintext(plaintext);
+                update_key(key);
+            }); 
 
             // Function that generates the initial table that will be shown on the web page.
             // This is only called once
