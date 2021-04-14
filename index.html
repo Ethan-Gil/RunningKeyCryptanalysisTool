@@ -81,9 +81,12 @@
             // Adding an event listener for the cryptanalyze button
             var btn = document.getElementById("cryptanalyze")
             btn.addEventListener("click", cryptanalyze);
+            // DISABLE AFTER USE
 
             // Main method that writes the information to the page and awaits for further user input.
             function cryptanalyze() {
+                btn.disabled = true;
+
                 ciphertext = getCiphertextInput();
                 plaintext = getPlaintextInput(ciphertext);
                 key = getKeyInput(ciphertext);
