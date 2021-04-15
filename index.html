@@ -7,43 +7,52 @@
         <title>Running Key</title>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <script src="functions.js"></script>
+        <script src="js/functions.js"></script>
 
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="css/style.css">
 
     </head>
     <body>
+        <div class="title-container">            
+            <h1 class="title">Running Key Cryptanalysis</h1>
+        </div>
+
         <div class="input-div">
-            <h1>Running Key Cryptanalysis</h1>
-            <h3>A tool that may serve as a visual aid to cryptanalyze vigenere autokey extended by plaintext and running key ciphers.</h3>
+            <h3 class="subheader">A visual aid for cryptanalyzing Vigenere autokey extended by plaintext and running key ciphyers.</h3>
             <hr>
             <br>
-            <h2>Ciphertext:</h2>
+            <h2 class="header">Ciphertext:</h2>
             <textarea name="ciphertext" id="ciphertext" class="ciphertext-input" cols="30" rows="10"></textarea>
 
-            <h2>Crib:</h2>
+            <h2 class="header">Crib:</h2>
             <textarea name="crib" id="crib" class="crib-input" cols="20" rows="1"></textarea>
             <br><br>
-            <button id='cryptanalyze'>Begin Cryptanalysis</button>
+
+            <button id='cryptanalyze'>Cryptanalyze</button>
             <button id='reset'>Reset</button>
-            <p>Note: This will reset any progress you have made.</p>
+            <p class="subheader">Note: This will reset any progress you have made.</p>
+            <hr>
         </div>
 
-        <div class="container" id="container">
-        </div>
+        <div class="container" id="container"></div>
 
-        <div class="container">
-            <br>
+        <div class="btn-container">
             <button id='shift-left'>Shift Left</button>
             <button id='shift-right'>Shift Right</button>
         </div>
+
+        <br>
+        <p class="info">Site designed for CSC 483 by Ethan Gil</p>
+        <p class="info"><a href="https://github.com/Ethan-Gil/RunningKeyTool">GitHub Repository</a></p>
 
         <script>
             var ciphertext;
             var plaintext;
             var key;
+            var crib;
             var crib_length;
-            var crib_index = 0;
+            var crib_index;
+            var written_to_page = false;    // Keeps track of whether the table has been written to the page
 
             // Getting the ciphertext from user input
             function getCiphertextInput() {
@@ -58,7 +67,7 @@
             // Getting the crib from the user and creating the plaintext array
             // Also setting the length of the crib
             function getPlaintextInput(ciphertext) {
-                var crib = $('#crib').val();
+                crib = $('#crib').val();
                 crib = crib.replace(/\s/g, '');
                 crib = crib.split('');
 
@@ -67,6 +76,7 @@
 
                 // Setting the length of the crib
                 crib_length = crib.length;
+                crib_index = 0;
 
                 return plaintext;
             }
@@ -86,32 +96,37 @@
             var resetBtn = document.getElementById("reset");
             resetBtn.addEventListener("click", reset);
 
+            // Resetting all of the user input and reloading the page
             function reset() {
-                btn.disabled = false;
+                document.getElementById("ciphertext").value = ""
+                document.getElementById("crib").value = ""
+                written_to_page = false;
+
                 location.reload();
             }
 
             // Main method that writes the information to the page and awaits for further user input.
             function cryptanalyze() {
 
-                // Disabling the cryptanalyze button, as it only needs to be used once.
-                btn.disabled = true;
+                // To prevent corruption of the user's progress, if the information has initially been written to the page, further user input isn't needed.
+                if (written_to_page) return;
 
                 // Getting the initial ciphertext, plaintext, and key based on user input.
                 ciphertext = getCiphertextInput();
                 plaintext = getPlaintextInput(ciphertext);
                 key = getKeyInput(ciphertext);
 
-                // console.log("Ciphertext: " + ciphertext);
-                // console.log("Plaintext: " + plaintext)
-                // console.log("Key: " + key);
-
                 // Keeping track of the crib
-                var crib_index = 0;
-                var crib_length = crib.length;
+                crib_index = 0;
+                crib_length = crib.length;
 
-                // Initially writing the arrays to the page
-                write(ciphertext, plaintext, key);
+                // Checking to see if the table has already been written to the page.
+                // If it has, then nothing will be done.
+                // Otherwise, dynamically create it and write it to the page
+                if (written_to_page == false && ciphertext != "") {
+                    write(ciphertext, plaintext, key);
+                    written_to_page = true;
+                }
 
                 // Listening for further user input
                 for (let i = 0; i < plaintext.length; i++) {
@@ -166,10 +181,14 @@
 
                             // Getting the indexes of every letter in the crib, within the plaintext array.
                             var crib_placements = find_crib_placement(plaintext, crib, crib_index);
-                            // console.log(`Crib Indexes: ${crib_placements}`);
+                            console.log("Plaintext: " + plaintext);
+                            console.log("Crib: " + crib);
+                            console.log("Crib Index: " + crib_index);
+                            console.log(`Crib Indexes: ${crib_placements}`);
 
                             // If the crib is changed through a key letter edit, then warn the user:
                             if (crib_placements.includes(i)) {
+                                console.log("Test")
                                 alert("Warning: The previous edit you made changed the crib. Please ensure that this is what you wanted to do.");
                             }
 
@@ -207,8 +226,6 @@
             // Shifting the plaintext right
             $('#shift-right').click( () => {
 
-                console.log("Plaintext: " + plaintext)
-
                 // Saving a copy of the original plaintext
                 var original_plaintext = plaintext;
 
@@ -219,7 +236,10 @@
                 if (compare_array(plaintext, original_plaintext) == false) {
                     crib_index++;
                 }
+
                 // console.log(`Crib Index: ${crib_index}`);
+                // var crib_placements = find_crib_placement(plaintext, crib, crib_index);            
+                // console.log(`Crib Indexes: ${crib_placements}`);
 
                 // The order in which these are called ensures that the plaintext will never be changed based on shifting.
                 update_key(key);
@@ -239,26 +259,14 @@
                 if (compare_array(plaintext, original_plaintext) == false) {
                     crib_index--;
                 }
+
                 // console.log(`Crib Index: ${crib_index}`)
+                // var crib_placements = find_crib_placement(plaintext, crib, crib_index);            
+                // console.log(`Crib Indexes: ${crib_placements}`);
 
                 update_key(key);
                 update_plaintext(plaintext);
             });
-
-            //     // Clearing the plaintext and the key
-            //     $('#clear-plaintext').click( () => {
-            //     for (let i = 0; i < plaintext.length; i++) {
-            //         plaintext[i] = "";
-            //         key[i] = "";
-            //     }
-            //     update_plaintext(plaintext);
-            //     update_key(key);
-            // }); 
-
-            // todo: functonality to reset input and reset ciphertext, plaintxt, and key.
-            function clearInput() {
-                console.log("to do")
-            }
 
             // Function that generates the initial table that will be shown on the web page.
             // This is only called once
