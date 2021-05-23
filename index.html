@@ -105,10 +105,11 @@
                 location.reload();
             }
 
+            
             // Main method that writes the information to the page and awaits for further user input.
             function cryptanalyze() {
 
-                // To prevent corruption of the user's progress, if the information has initially been written to the page, further user input isn't needed.
+                // To prevent corruption of the user's progress, if the information has already been written to the page, this method is not needed.
                 if (written_to_page) return;
 
                 // Getting the initial ciphertext, plaintext, and key based on user input.
@@ -136,37 +137,56 @@
                         
                         // Getting the key that was pressed. We will assume that this is a letter.
                         var letter = e.key;
+                        // console.log(letter);
 
-                        // Checking for invalid keys
-                        // Todo: Add in functionality to move right if the right arrow is pushed, and vice versa for the left arrow. Maybe convert it to a tab.
-                        if (letter == "ArrowRight" || letter == "ArrowLeft" || letter == "ArrowUp" || letter == "ArrowDown" || letter == "Tab") {
-                            console.log("Invalid Letter: " + letter);
-                            return;
-                        }
+                        // Todo: Checking for invalid keys
 
-                        // If the user is attempting to erase a letter, we must also erase the key letter corresponding to it.
+                        // If the user is attempting to erase a letter, we must update the arrays
                         if (letter == "Backspace") {
                             plaintext[i] = "";
                             key[i] = "";
                             update_key(key);
+                        }
+
+                        // Moving focus to the right
+                        else if (letter == "Enter" || letter == "ArrowRight") {
+
+                            if (i + 1 < plaintext.length) {
+                                next = document.getElementById(`${i + 1}`);
+                                next.focus();
+                            }
+                            return;
+                        }
+
+                        // Moving focus to the left
+                        else if (letter == "ArrowLeft") {
+
+                            if (i > 0) {
+                                next = document.getElementById(`${i - 1}`);
+                                next.focus();
+                            }
+                            return;
+                        }
+
+                        // Shifting the user's focus down (to the key)
+                        else if (letter == "ArrowUp" || letter == "ArrowDown") {
+                            next = document.getElementById(`key${i}`);
+                            next.focus();
+                            return;
                         }
 
                         // If the user just enters in a normal, valid letter.
                         else {
                             plaintext[i] = letter;
                             update_key(key);
+                            update_plaintext(plaintext);
                         }
+
                     });
 
                     // Listening for key changes
                     document.getElementById(`key${i}`).addEventListener("keydown", (e) => {
-                        
                         var letter = e.key;
-
-                        if (letter == "ArrowRight" || letter == "ArrowLeft" || letter == "ArrowUp" || letter == "ArrowDown" || letter == "Tab") {
-                            console.log("Invalid Letter: " + letter);
-                            return;
-                        }
 
                         if (letter == "Backspace") {
                             plaintext[i] = "";
@@ -174,26 +194,51 @@
                             update_plaintext(plaintext);
                         }
 
+                        // Moving focus to the right
+                        else if (letter == "Enter" || letter == "ArrowRight") {
+
+                        if (i + 1 < plaintext.length) {
+                            next = document.getElementById(`key${i + 1}`);
+                            next.focus();
+                            }
+                            return;
+                        }
+
+                        // Moving focus to the left
+                        else if (letter == "ArrowLeft") {
+
+                            if (i > 0) {
+                                next = document.getElementById(`key${i - 1}`);
+                                next.focus();
+                            }
+                            return;
+                        }
+
+                        // Shifting the user's focus down (to the key)
+                        else if (letter == "ArrowUp" || letter == "ArrowDown") {
+                            next = document.getElementById(`${i}`);
+                            next.focus();
+                            return;
+                        }
+
                         else {
                         
-                            // It isn't a good idea for users to be able to change the crib, as it can corrupt the work they have completed.
-                            // Therefore, we will keep track of the crib's placement, and if any letter within the crib is changed through the key, the user will be alerted.
-
-                            // Getting the indexes of every letter in the crib, within the plaintext array.
+                            // This is a warning system in case the user tries to make changes to the key that will affect the crib.
+                            // If the user does make make changes to the crib in this way, they will be alerted.
+                            // crib_placements will be an array that contains the indexes of every letter in the crib, within the plaintext array.
+                            // Initially this will return [0, 1, ..., n]
                             var crib_placements = find_crib_placement(plaintext, crib, crib_index);
-                            console.log("Plaintext: " + plaintext);
-                            console.log("Crib: " + crib);
-                            console.log("Crib Index: " + crib_index);
-                            console.log(`Crib Indexes: ${crib_placements}`);
+                            //console.log(`Crib Indexes: ${crib_placements}`);
 
                             // If the crib is changed through a key letter edit, then warn the user:
                             if (crib_placements.includes(i)) {
-                                console.log("Test")
                                 alert("Warning: The previous edit you made changed the crib. Please ensure that this is what you wanted to do.");
                             }
 
                             key[i] = letter;
                             update_plaintext(plaintext);
+                            update_key(key);
+
                         }
                     });
                 }
@@ -214,7 +259,6 @@
 
                 // Getting the latest version of the key from the backend
                 key = fill_key(plaintext, ciphertext, key);
-                //console.log("New key: " + key)
 
 
                 // Displaying the new key values to the page
@@ -296,6 +340,7 @@
                     var td = document.createElement('TD')
                     var element = document.createElement('INPUT');
                     element.maxLength = 1;
+                    element.class = "plaintext";
                     element.value = plaintext[i];
                     element.id = `${i}`
 

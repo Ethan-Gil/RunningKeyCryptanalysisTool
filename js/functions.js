@@ -1,6 +1,5 @@
 /** FUNCTIONS **/
 
-
 // Given the crib and the ciphertext, it fills out the plaintext array
 function create_plaintext(ciphertext, crib) {
     var plaintext = [];
@@ -8,7 +7,8 @@ function create_plaintext(ciphertext, crib) {
     for (let i = 0; i < ciphertext.length; i++) {
         if (i < crib.length) {
             plaintext[i] = crib[i];
-        }
+        } 
+        
         else {
             plaintext[i] = "";
         }
@@ -26,7 +26,6 @@ function create_key(ciphertext) {
     }
     return key;
 }
-
 
 // Shifting the array right. 
 // Non-letter elements will wrap around, but will not wrap any letters around
@@ -110,12 +109,12 @@ function fill_key(plaintext, ciphertext, key) {
     var plaintext_replacement = to_uppercase(plaintext);
 
     for (let i = 0; i < ciphertext.length; i++) {
-        current_ciphertext_letter = ciphertext[i];
-        current_plaintext_letter = plaintext_replacement[i];
+        var current_ciphertext_letter = ciphertext[i];
+        var current_plaintext_letter = plaintext_replacement[i];
 
         // If there is a plaintext letter at the current index, we will find the corresponding key letter.
         if (current_plaintext_letter != undefined) {
-            letter = get_letter(current_plaintext_letter, current_ciphertext_letter, table);
+            var letter = get_letter(current_plaintext_letter, current_ciphertext_letter, table);
             key[i] = letter;
         }
 
@@ -136,12 +135,12 @@ function fill_plaintext(plaintext, ciphertext, key) {
     var key_replacement = to_uppercase(key);
 
     for (let i = 0; i < ciphertext.length; i++) {
-        current_ciphertext_letter = ciphertext[i];
-        current_key_letter = key_replacement[i];
+        var current_ciphertext_letter = ciphertext[i];
+        var current_key_letter = key_replacement[i];
 
         // If there is a key letter at the current index, we will find the corresponding plaintext letter.
         if (current_key_letter != undefined) {
-            letter = get_letter(current_key_letter, current_ciphertext_letter, table);
+            var letter = get_letter(current_key_letter, current_ciphertext_letter, table);
             plaintext[i] = letter;
         }
 
@@ -202,7 +201,7 @@ function num_to_letter(num) {
 function letter_to_num(letter) {
     var alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
     for (let i = 0; i < alphabet.length; i++) {
-        if (letter = alphabet[i]) {
+        if (letter == alphabet[i]) {
             return i;
         }
     }
@@ -226,7 +225,7 @@ function get_letter(plaintext_letter, ciphertext_letter, table) {
 
                 // When we find the matching ciphertext letter, we will return it's index, but as a letter.                
                 if (col_letter == ciphertext_letter) {
-                    key_letter = num_to_letter(col);
+                    var key_letter = num_to_letter(col);
                     key_letter = to_lowercase(key_letter);
 
                     return key_letter;
@@ -265,7 +264,7 @@ function to_lowercase(arr) {
 
 // Todo: Should these variables be global?
 var alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
-table = generate_addition_table(alphabet, alphabet);
+var table = generate_addition_table(alphabet, alphabet);
 
 
 
