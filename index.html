@@ -340,7 +340,6 @@
                     var td = document.createElement('TD')
                     var element = document.createElement('INPUT');
                     element.maxLength = 1;
-                    element.class = "plaintext";
                     element.value = plaintext[i];
                     element.id = `${i}`
 
@@ -363,18 +362,6 @@
                     td.appendChild(element);
                     tr.appendChild(td);
                 }
-
-                // Key (no input)
-                // key = fill_key(plaintext, ciphertext, key);
-                // var tr = document.createElement('TR');
-                // tr.id = "key_row";
-                // tableBody.appendChild(tr);
-                // for (i = 0; i < ciphertext.length; i++) {
-                //     var td = document.createElement('TD')
-                //     td.id = `key${i}`;
-                //     td.appendChild(document.createTextNode(key[i]));
-                //     tr.appendChild(td);
-                // }
 
                 // Appending the new data to the table
                 myTableDiv.appendChild(table)
