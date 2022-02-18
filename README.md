@@ -58,18 +58,29 @@ Consider the ciphertext shown below. Also, assume that the word "kentucky" may b
 
   
 First, the ciperhtext and crib are inputted, and the cryptanalyze button is pressed. We may see that the crib is inputted, along with a potential fragment of the key. It does not look like English though, so it's safe to assume that the plaintext is not in the correct position.
+
+
 ![1.png](images/1.png?raw=true  "1.png")
+##
 
 Thus, we may shift to the right until we see anything that looks like English. After several right shifts, it looks as though certain fragments of words have been found. Specifically, it looks as though the words "end" and "in" are in the key.
+
+
 ![2.png](images/2.png?raw=true  "2.png")
+##
 
 
 Next, we may begin guessing letters. The letters "lov" in the key may be "lovers", so we may guess that. Now, we see that the word "university" could possibly be in the plaintext, so we may enter that.
-![3.png](images/4.png?raw=true  "3.png")
 
+
+![3.png](images/4.png?raw=true  "3.png")
+##
 
 It looks as though that last guess was correct, and we have now have filled in the right-most cells of the plaintext and key. Since we have the majority of the plaintext, and we know that it's a university in kentucky, we may use intution to guess the remaining characters.
+
+
 ![4.png](images/4.png?raw=true  "4.png")
+##
 
 
 It looks as though the plaintext is **Northern Kentucky University** and the key is **Journeys end in lovers meeting**.
