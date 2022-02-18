@@ -4,6 +4,8 @@
 function create_plaintext(ciphertext, crib) {
     var plaintext = [];
 
+
+    // todo: pass in cipertext length instead of the entire array
     for (let i = 0; i < ciphertext.length; i++) {
         if (i < crib.length) {
             plaintext[i] = crib[i];
