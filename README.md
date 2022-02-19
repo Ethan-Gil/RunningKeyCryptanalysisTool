@@ -14,8 +14,7 @@ The **Running Key Cipher** is a polyalphabetic substitution cipher in which ciph
 
 The tool may be used through the following link: [https://ethan-gil.github.io/RunningKeyTool/](https://ethan-gil.github.io/RunningKeyTool/)
 
-#### This software was designed for CSC 438 - Cryptology by Ethan Gil*
-Additonally, if you have any questions, please feel free to contact me at ethan.gil1@outlook.com.
+This software was designed for **CSC 438 - Cryptology** by Ethan Gil. If you have any questions, please feel free to contact me at ethan.gil1@outlook.com.
   
   
 
